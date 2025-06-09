@@ -11,11 +11,7 @@ function Navbar({ activeSection, setActiveSection }) {
   const [scrolled, setScrolled] = useState(false);
 
   const menuItems = [
-    "INICIO",
-    "QUIÉNES SOMOS",
-    "SOLUCIONES",
-    "VACANTES",
-    "PROYECTOS / CASOS DE ÉXITO",
+    
     "CONTACTO"
   ];
 
