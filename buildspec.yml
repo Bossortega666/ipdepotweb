@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo "Instalando dependencias"
+      - npm ci
+  build:
+    commands:
+      - echo "Ejecutando build de React"
+      - npm run build
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: build
