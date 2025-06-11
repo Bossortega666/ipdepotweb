@@ -11,8 +11,12 @@ function Navbar({ activeSection, setActiveSection }) {
   const [scrolled, setScrolled] = useState(false);
 
   const menuItems = [
-    
-    "CONTACTOsssss"
+    "INICIO",
+    "QUIÉNES SOMOS",
+    "SOLUCIONES",
+    "VACANTES",
+    "PROYECTOS / CASOS DE ÉXITO",
+    "CONTACTO"
   ];
 
   useEffect(() => {
@@ -112,7 +116,11 @@ export default function SoftwareCompanyHome() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = [
-        
+        "INICIO",
+        "QUIÉNES SOMOS",
+        "SOLUCIONES",
+        "VACANTES",
+        "PROYECTOS / CASOS DE ÉXITO",
         "CONTACTO"
       ];
       const offsets = sections
@@ -171,7 +179,7 @@ export default function SoftwareCompanyHome() {
                     transition={{ duration: 0.8 }}
                     className="text-5xl font-extrabold mb-4 drop-shadow-lg"
                   >
-                    IP DEPOT SA DE CV FINAL PROYECTOS SOPASassssjkhdkahsdkjsssssssssssssssssssss
+                    IP DEPOT
                   </motion.h1>
                   <p className="text-xl text-gray-100 max-w-xl drop-shadow-sm">
                     Innovación y Desarrollo de Software a la Medida
@@ -192,7 +200,7 @@ export default function SoftwareCompanyHome() {
         transition={{ duration: 0.8 }}
       >
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl font-extrabold text-indigo-700 mb-8">¿Quiénes?</h2>
+          <h2 className="text-4xl font-extrabold text-indigo-700 mb-8">¿Quiénes Somos?</h2>
           <p className="text-lg leading-relaxed mb-6">
             En <span className="font-semibold text-indigo-600">IP DEPOT</span>, somos una empresa de desarrollo de software especializada en soluciones tecnológicas de alto impacto.
             Desde nuestra fundación, nos hemos dedicado a transformar procesos complejos en plataformas digitales ágiles, seguras y escalables.
@@ -223,5 +231,3 @@ export default function SoftwareCompanyHome() {
     </div>
   );
 }
-
-
