@@ -179,7 +179,7 @@ export default function SoftwareCompanyHome() {
                     transition={{ duration: 0.8 }}
                     className="text-5xl font-extrabold mb-4 drop-shadow-lg"
                   >
-                    IP DEPOT CAMBIO
+                    IP DEPOT CAMBIO 2
                   </motion.h1>
                   <p className="text-xl text-gray-100 max-w-xl drop-shadow-sm">
                     Innovación y Desarrollo de Software a la Medida
