@@ -13,17 +13,18 @@ phases:
       - echo "Compilando aplicación React..."
       - npm run build
 
-  post_build:
-    commands:
-      - echo "Subiendo archivos al bucket S3..."
-      - aws s3 sync build/ s3://ipdepotweb/ --delete
+post_build:
+  commands:
+    - echo "Subiendo archivos al bucket S3..."
+    - aws s3 sync build/ s3://ipdepotweb/ --delete
 
-      - echo "Reescribiendo index.html con headers..."
-      - aws s3 cp build/index.html s3://ipdepotweb/index.html \
-          --cache-control "no-cache, no-store, must-revalidate" \
-          --content-type "text/html"
+    - echo "Reescribiendo index.html con headers..."
+    - aws s3 cp build/index.html s3://ipdepotweb/index.html --cache-control "no-cache, no-store, must-revalidate" --content-type "text/html"
 
-      - echo "Invalidando CloudFront..."
-      - aws cloudfront create-invalidation \
-          --distribution-id E2LKSU7JQU3CJ \
-          --paths "/index.html"
+    - echo "Invalidando CloudFront..."
+    - aws cloudfront create-invalidation --distribution-id E2LKSU7JQU3CJ --paths "/index.html"
+
+artifacts:
+  base-directory: build
+  files:
+    - '**/*'
