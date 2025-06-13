@@ -5,23 +5,25 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
+      - echo "Instalando dependencias..."
       - npm ci
 
   build:
     commands:
-      - echo "Ejecutando build..."
+      - echo "Compilando aplicación React..."
       - npm run build
 
 post_build:
   commands:
-    - echo "Sincronizando archivos a S3..."
+    - echo "Subiendo archivos al bucket S3..."
     - aws s3 sync build/ s3://ipdepotweb/ --delete
-    - echo "Sobrescribiendo index.html con headers correctos..."
+
+    - echo "Reescribiendo index.html con headers..."
     - aws s3 cp build/index.html s3://ipdepotweb/index.html \
         --cache-control "no-cache, no-store, must-revalidate" \
         --content-type "text/html"
+
     - echo "Invalidando CloudFront..."
     - aws cloudfront create-invalidation \
         --distribution-id E2LKSU7JQU3CJ \
         --paths "/index.html"
-
