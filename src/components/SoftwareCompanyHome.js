@@ -1,233 +1,313 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import "antd/dist/reset.css";
+
+import { Menu, Dropdown, Button, Card } from "antd";
+import {
+  MenuOutlined,
+  ArrowRightOutlined,
+} from "@ant-design/icons";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectCoverflow, Autoplay, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/navigation";
+
 import { motion } from "framer-motion";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import heroImage1 from "../assets/banner-ai.png";
+
+//import heroImage1 from "../assets/banner-ai.png";
 import heroImage2 from "../assets/banner-ai2.png";
 import heroImage3 from "../assets/banner-ai3.png";
+import heroImage4 from "../assets/banner-ai4.png";
+import heroImage5 from "../assets/banner-ai5.png";
 
-function Navbar({ activeSection, setActiveSection }) {
-  const [scrolled, setScrolled] = useState(false);
-
-  const menuItems = [
-    "INICIO",
-    "QUIÉNES SOMOS",
-    "SOLUCIONES",
-    "VACANTES",
-    "PROYECTOS / CASOS DE ÉXITO",
-    "CONTACTO"
-  ];
-
-  useEffect(() => {
-    let lastScroll = 0;
-    const onScroll = () => {
-      const currentScroll = window.scrollY;
-      setScrolled(currentScroll > 50);
-      const nav = document.getElementById("navbar");
-      if (nav) {
-        if (currentScroll > lastScroll && currentScroll > 100) {
-          nav.style.transform = "translateY(-100%)";
-        } else {
-          nav.style.transform = "translateY(0)";
-        }
-      }
-      lastScroll = currentScroll;
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.8 }}
-      id="navbar"
-      className={`fixed top-0 left-0 right-0 z-50 px-8 flex justify-between items-center transition-all duration-300 transform ${
-        scrolled
-          ? "bg-white/90 backdrop-blur-md shadow-md text-gray-800"
-          : "bg-transparent text-white"
-      }`}
-    >
-      <h1 className="text-xl font-bold drop-shadow-md">IP DEPOT</h1>
-      <ul className="flex gap-6 items-center font-semibold text-xs drop-shadow-md">
-        {menuItems.map((item) => (
-          <li
-            key={item}
-            onClick={() => {
-              const el = document.getElementById(item);
-              if (el) el.scrollIntoView({ behavior: "smooth" });
-            }}
-            className={`cursor-pointer hover:text-indigo-300 transition-colors duration-200 ${
-              activeSection === item ? "underline underline-offset-4" : ""
-            }`}
-          >
-            {item}
-          </li>
-        ))}
-      </ul>
-    </motion.nav>
-  );
-}
-
-function Button({ children, className = "", ...props }) {
-  return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      {...props}
-      className={`bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300 ${className}`}
-    >
-      {children}
-    </motion.button>
-  );
-}
-
-function Card({ children, className = "" }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      viewport={{ once: true }}
-      className={`bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition duration-300 ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function CardContent({ children, className = "" }) {
-  return <div className={className}>{children}</div>;
-}
-
-function Footer() {
-  return (
-    <footer className="mt-20 text-center text-sm text-gray-500 py-6 border-t border-gray-200">
-      © {new Date().getFullYear()} IP DEPOT. Todos los derechos reservados.
-    </footer>
-  );
-}
+const navItems = [
+  { key: "inicio", label: "Inicio" },
+  { key: "servicios", label: "Servicios" },
+  { key: "ia", label: "IA e Integraciones" },
+  { key: "proyectos", label: "Proyectos" },
+  { key: "equipo", label: "Equipo" },
+  { key: "contacto", label: "Contacto" },
+];
 
 export default function SoftwareCompanyHome() {
-  const [activeSection, setActiveSection] = useState("INICIO");
+  const [activeSection, setActiveSection] = useState("inicio");
 
   useEffect(() => {
-    const handleScroll = () => {
-      const sections = [
-        "INICIO",
-        "QUIÉNES SOMOS",
-        "SOLUCIONES",
-        "VACANTES",
-        "PROYECTOS / CASOS DE ÉXITO",
-        "CONTACTO"
-      ];
-      const offsets = sections
-        .map((id) => {
-          const el = document.getElementById(id);
-          return el ? { id, top: el.offsetTop } : null;
-        })
-        .filter(Boolean);
+    const sections = navItems.map((item) => document.getElementById(item.key));
 
-      const scrollY = window.scrollY + 80;
-      const current = offsets.reverse().find((s) => scrollY >= s.top);
-      if (current && current.id !== activeSection) {
-        setActiveSection(current.id);
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 100;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= scrollPos) {
+          setActiveSection(section.id);
+          break;
+        }
       }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeSection]);
-
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: false
-  };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 via-white to-gray-200 text-gray-800 relative">
-      {/* 1) Colocamos el Navbar aquí, como elemento fijo (fixed) con z-50 */}
-      <Navbar activeSection={activeSection} setActiveSection={setActiveSection} />
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-800">
+      <header className="sticky top-0 z-50 backdrop-blur bg-white/80 shadow-md border-b border-gray-200">
+  <div className="container mx-auto flex items-center justify-between px-4 py-3">
+    <div className="text-2xl font-extrabold tracking-tight">
+  <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
+    IP DEPOT
+  </span>
+</div>
 
-      {/* 2) Slider responsivo: 60vh en móvil, 70vh en sm, 80vh en lg */}
-      <header
-        id="INICIO"
-        className="relative w-full h-[60vh] sm:h-[70vh] lg:h-[80vh] overflow-hidden"
+
+
+    {/* Menú desktop */}
+    <nav className="hidden md:flex space-x-6 relative">
+      {navItems.map((item) => (
+        <a
+          key={item.key}
+          href={`#${item.key}`}
+          className={`group relative text-sm font-semibold uppercase tracking-wide transition-all duration-300 ${
+            activeSection === item.key
+              ? "text-blue-600"
+              : "text-gray-600 hover:text-blue-600"
+          }`}
+        >
+          {item.label}
+          <span
+            className={`absolute left-0 -bottom-1 h-[2px] w-full bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left ${
+              activeSection === item.key ? "scale-x-100" : ""
+            }`}
+          />
+        </a>
+      ))}
+    </nav>
+
+    {/* Menú móvil */}
+    <div className="md:hidden">
+      <Dropdown
+        menu={{
+          items: navItems.map((item) => ({
+            key: item.key,
+            label: (
+              <a
+                href={`#${item.key}`}
+                className={`block px-4 py-2 text-sm font-medium ${
+                  activeSection === item.key
+                    ? "text-blue-600"
+                    : "text-gray-700"
+                }`}
+              >
+                {item.label}
+              </a>
+            ),
+          })),
+        }}
+        placement="bottomRight"
+        arrow
+        overlayClassName="bg-white/90 backdrop-blur shadow-xl rounded-xl"
       >
-        {/* Le damos z-0 al slider para que quede detrás del navbar */}
-        <div className="relative z-0 h-full">
-          <Slider {...sliderSettings}>
-            {[heroImage1, heroImage2, heroImage3].map((img, index) => (
-              <div key={index} className="relative w-full h-full">
-                <img
-                  src={img}
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4 bg-black/40">
-                  <motion.h1
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8 }}
-                    className="text-5xl font-extrabold mb-4 drop-shadow-lg"
-                  >
-                    IP DEPOT 90139309130931093190
-                  </motion.h1>
-                  <p className="text-xl text-gray-100 max-w-xl drop-shadow-sm">
-                    Innovación y Desarrollo de Software a la Medida
-                  </p>
-                </div>
-              </div>
+        <Button
+          icon={<MenuOutlined />}
+          className="border-none shadow-none text-gray-700 hover:text-blue-600 bg-white/80 backdrop-blur"
+        />
+      </Dropdown>
+    </div>
+  </div>
+</header>
+
+      <main className="container mx-auto px-4 py-16">
+        <section id="inicio" className="text-center mb-24">
+          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-gray-800">
+  Transformación Digital con Soluciones de Software e Inteligencia Artificial
+</h2>
+
+
+          {/* Slider con Swiper.js y animación */}
+          <motion.div
+            className="max-w-5xl mx-auto mb-10 relative"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <Swiper
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              loop={true}
+              autoplay={{ delay: 3000 }}
+              navigation
+              slidesPerView="auto"
+              coverflowEffect={{
+                rotate: 30,
+                stretch: 0,
+                depth: 100,
+                modifier: 1,
+                slideShadows: true,
+              }}
+              modules={[EffectCoverflow, Autoplay, Navigation]}
+              className="mySwiper"
+            >
+              {[heroImage3,heroImage4,heroImage5].map((img, index) => (
+                <SwiperSlide
+                  key={index}
+                  className="w-72 md:w-96 flex items-center justify-center"
+                >
+                 <img
+                src={img}
+                alt={`slide-${index}`}
+                className="rounded-2xl shadow-2xl w-full h-[400px] md:h-[500px] object-cover"
+              />
+
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </motion.div>
+
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            Transformamos tus ideas en soluciones digitales con inteligencia artificial
+            de vanguardia y diseño de experiencia de usuario de clase mundial.
+          </p>
+
+          <a href="#contacto">
+          <Button
+            type="primary"
+            size="large"
+            icon={<ArrowRightOutlined />}
+            className="px-6 py-3"
+          >
+            Contáctanos
+          </Button>
+          </a>
+        </section>
+        
+
+        <h3 className="text-3xl font-bold text-center mb-10">
+  <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
+    Servicios
+  </span>
+</h3>
+
+
+        {/* Servicios animados */}
+        <section id="servicios" className="grid md:grid-cols-3 gap-8 mb-24">
+          {[
+            {
+              title: "Software a medida",
+              desc: "Soluciones personalizadas para tus procesos empresariales.",
+            },
+            {
+              title: "Integración de IA",
+              desc: "Automatiza decisiones y mejora tus servicios con inteligencia artificial.",
+            },
+            {
+              title: "Consultoría UX/UI",
+              desc: "Diseño de interfaces intuitivas centradas en el usuario.",
+            },
+          ].map((service, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+              viewport={{ once: true }}
+            >
+              <Card title={service.title} hoverable className="shadow-md">
+                <p>{service.desc}</p>
+              </Card>
+            </motion.div>
+          ))}
+        </section>
+
+        {/* Proyectos animados */}
+        <section id="proyectos" className="text-center mb-24">
+          <h3 className="text-3xl font-bold mb-6">
+  <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
+    Proyectos Destacados
+  </span>
+</h3>
+
+
+          <p className="text-gray-600 max-w-xl mx-auto mb-10">
+            Hemos colaborado con startups y grandes corporaciones para implementar soluciones tecnológicas innovadoras.
+          </p>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((project, index) => (
+              <motion.div
+                key={project}
+                initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card
+                  title={`Proyecto IA #${project}`}
+                  hoverable
+                  className="transition-transform"
+                >
+                  <p>Optimización operativa mediante modelos de predicción personalizados.</p>
+                </Card>
+              </motion.div>
             ))}
-          </Slider>
-        </div>
-      </header>
-
-      <motion.section
-        id="QUIÉNES SOMOS"
-        className="pt-24 pb-20 px-6 bg-white text-gray-800"
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl font-extrabold text-indigo-700 mb-8">¿Quiénes Somos?</h2>
-          <p className="text-lg leading-relaxed mb-6">
-            En <span className="font-semibold text-indigo-600">IP DEPOT</span>, somos una empresa de desarrollo de software especializada en soluciones tecnológicas de alto impacto.
-            Desde nuestra fundación, nos hemos dedicado a transformar procesos complejos en plataformas digitales ágiles, seguras y escalables.
-          </p>
-          <p className="text-lg leading-relaxed mb-6">
-            Nuestro equipo está compuesto por ingenieros, diseñadores y consultores con amplia experiencia en desarrollo web, aplicaciones móviles, inteligencia artificial,
-            ciberseguridad y servicios en la nube. Nos enorgullece ser aliados tecnológicos de organizaciones que buscan innovación, eficiencia y crecimiento sostenible.
-          </p>
-          <p className="text-lg leading-relaxed mb-6">
-            Nos diferenciamos por nuestro enfoque integral: desde el análisis estratégico y diseño UX/UI, hasta la implementación, pruebas y mantenimiento continuo.
-            Cada proyecto que desarrollamos se alinea con los objetivos del cliente, garantizando resultados medibles y soluciones adaptadas a su realidad operativa.
-          </p>
-          <div className="mt-10 text-left space-y-4">
-            <p className="text-lg">
-              <strong className="text-indigo-700">Nuestra misión:</strong> Desarrollar tecnología que potencie el crecimiento de nuestros clientes.
-            </p>
-            <p className="text-lg">
-              <strong className="text-indigo-700">Nuestra visión:</strong> Ser líderes en innovación tecnológica en América Latina, marcando tendencia en el desarrollo de software seguro y ético.
-            </p>
-            <p className="text-lg">
-              <strong className="text-indigo-700">Nuestros valores:</strong> Innovación · Transparencia · Compromiso · Excelencia Técnica
-            </p>
           </div>
-        </div>
-      </motion.section>
+        </section>
+      </main>
+<section id="contacto" className="bg-white py-20 px-4">
+  <div className="max-w-3xl mx-auto text-center">
+    <h3 className="text-3xl font-bold mb-6">
+      <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
+        Contáctanos
+      </span>
+    </h3>
+    <p className="text-gray-600 mb-10">
+      Envíenos un mensaje y un experto en Transformación Digital se comunicará con usted.
+    </p>
 
-      <Footer />
+    <form className="space-y-6 text-left">
+      <input
+        type="text"
+        placeholder="Nombre / Name"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input
+        type="email"
+        placeholder="Correo electrónico / Email"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input
+        type="tel"
+        placeholder="Teléfono / Telephone"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input
+        type="text"
+        placeholder="Nombre de la empresa / Name of the company"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <input
+        type="text"
+        placeholder="Giro de la empresa / Company line"
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <textarea
+        placeholder="Explícanos de tu proyecto / Tell us about your project"
+        rows={4}
+        className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+
+      <Button type="primary" size="large" className="w-full mt-4">
+        Enviar mensaje
+      </Button>
+    </form>
+  </div>
+</section>
+
+      <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
+        © 2025 DEPOT. Todos los derechos reservados.
+      </footer>
     </div>
   );
 }
