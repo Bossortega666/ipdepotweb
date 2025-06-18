@@ -20,6 +20,8 @@ import heroImage2 from "../assets/banner-ai2.png";
 import heroImage3 from "../assets/banner-ai3.png";
 import heroImage4 from "../assets/banner-ai4.png";
 import heroImage5 from "../assets/banner-ai5.png";
+import logo from "../assets/logo.png";
+
 
 const navItems = [
   { key: "inicio", label: "Inicio" },
@@ -52,14 +54,15 @@ export default function SoftwareCompanyHome() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-800">
-      <header className="sticky top-0 z-50 backdrop-blur bg-white/80 shadow-md border-b border-gray-200">
+    
+    <div className="min-h-screen bg-ipdepot bg-cover bg-center bg-no-repeat">
+      <header className="sticky top-0 z-50 backdrop-blur bg-blue-800/9 shadow-md border-b border-gray-200">
   <div className="container mx-auto flex items-center justify-between px-4 py-3">
-    <div className="text-2xl font-extrabold tracking-tight">
-  <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
-    IP DEPOT
-  </span>
-</div>
+    <img
+  src={logo}
+  alt="IP DEPOT logo"
+  className="h-10 object-contain"
+/>
 
 
 

@@ -4,7 +4,15 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",  // ✅ Muy importante que incluya `.js`
   ],
   theme: {
-    extend: {},
+    extend: {
+        
+        backgroundImage: {
+        // Clave: 'ipdepot', puedes usarla luego como bg-ipdepot
+        ipdepot: "url('/src/assets/background.webp')",
+      },
+    },
   },
   plugins: [],
 };
+   
+  
