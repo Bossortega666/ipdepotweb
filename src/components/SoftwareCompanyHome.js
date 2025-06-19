@@ -309,7 +309,7 @@ export default function SoftwareCompanyHome() {
       </section>
 
       <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
-        © 2025 DEPOT. Todos los derechos reservados.
+        © 2025 DEPOT. Todos los derechos reservados. v 1.0
       </footer>
     </div>
   );
