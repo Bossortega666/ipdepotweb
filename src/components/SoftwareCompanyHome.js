@@ -125,53 +125,66 @@ export default function SoftwareCompanyHome() {
             Transformación Digital con Soluciones de Software e Inteligencia Artificial
           </h2>
 
-          {/* Slider con Swiper.js y animación */}
-          <motion.div
-            className="max-w-5xl mx-auto mb-10 relative bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          >
-            <Swiper
-              effect="coverflow"
-              grabCursor={true}
-              centeredSlides={true}
-              loop={true}
-              autoplay={{ delay: 3000 }}
-              navigation
-              pagination={{ clickable: true }}
-              slidesPerView="auto"
-              coverflowEffect={{
-                rotate: 30,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-              }}
-              modules={[EffectCoverflow, Autoplay, Navigation, Pagination]}
-              className="mySwiper"
-            >
-              {images.map((img, index) => (
-                <SwiperSlide
-                  key={index}
-                  className="w-72 md:w-96 flex items-center justify-center"
-                >
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0.7 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <img
-                      src={img}
-                      alt={`slide-${index}`}
-                      className="rounded-2xl shadow-2xl w-full h-[400px] md:h-[500px] object-cover"
-                    />
-                  </motion.div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </motion.div>
+         <div className="relative w-full h-screen overflow-hidden">
+  {/* Video de fondo */}
+  <div className="relative w-full h-screen overflow-hidden">
+  {/* Video de fondo */}
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="absolute inset-0 w-full h-full object-cover"
+  >
+    <source src="/videos/video.mp4" type="video/mp4" />
+    Tu navegador no soporta video HTML5.
+  </video>
+
+  {/* Overlay para contraste */}
+  <div className="absolute inset-0 bg-black/50 z-10"></div>
+
+  {/* Contenido */}
+  <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4">
+    <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow">
+      Web Development & AI Solutions — Global Reach
+    </h1>
+    <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
+      Transformamos ideas en experiencias digitales.
+    </p>
+  </div>
+</div>
+
+
+  {/* Contenido animado */}
+  <motion.div
+    className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4"
+    initial={{ opacity: 0, y: 50 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.8, ease: 'easeOut' }}
+  >
+    <div className="mb-4">
+      <span className="inline-block p-4 rounded-full bg-blue-600/70 backdrop-blur">
+        <ArrowRightOutlined className="text-white text-xl" />
+      </span>
+    </div>
+    <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow">
+      Innovación sin límites
+    </h1>
+    <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
+      Impulsa tu negocio con IA y software a medida, respaldado por la última tecnología.
+    </p>
+    <Button
+      type="primary"
+      size="large"
+      href="#contacto"
+      className="px-8 py-4"
+    >
+      ¡Habla con nosotros!
+    </Button>
+  </motion.div>
+</div>
+
 
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
             Transformamos tus ideas en soluciones digitales con inteligencia artificial
