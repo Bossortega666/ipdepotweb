@@ -128,7 +128,7 @@ export default function SoftwareCompanyHome() {
     playsInline
     className="absolute inset-0 w-full h-full object-cover"
   >
-    <source src="/videos/video.mp4" type="video/mp4" />
+    <source src="/videos/video.webm" type="video/webm"/>
     Tu navegador no soporta video HTML5.
   </video>
 
