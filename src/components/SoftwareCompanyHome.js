@@ -61,7 +61,8 @@ export default function SoftwareCompanyHome() {
           <img
             src={logo}
             alt="IP DEPOT logo"
-            className="h-12 md:h-16 lg:h-20 w-auto object-contain"
+            className="h-[200px] md:h-[90px] lg:h-[80px] w-auto object-contain"
+
           />
 
           {/* Menú desktop */}
@@ -118,16 +119,7 @@ export default function SoftwareCompanyHome() {
           </div>
         </div>
       </header>
-
-      <main className="container mx-auto px-4 py-16">
-        <section id="inicio" className="text-center mb-24">
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-gray-800">
-            Transformación Digital con Soluciones de Software e Inteligencia Artificial
-          </h2>
-
-         <div className="relative w-full h-screen overflow-hidden">
-  {/* Video de fondo */}
-  <div className="relative w-full h-screen overflow-hidden">
+       <div className="relative w-full h-screen overflow-hidden">
   {/* Video de fondo */}
   <video
     autoPlay
@@ -143,7 +135,7 @@ export default function SoftwareCompanyHome() {
   {/* Overlay para contraste */}
   <div className="absolute inset-0 bg-black/50 z-10"></div>
 
-  {/* Contenido */}
+  {/* Contenido centrado */}
   <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4">
     <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow">
       Web Development & AI Solutions — Global Reach
@@ -151,8 +143,27 @@ export default function SoftwareCompanyHome() {
     <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
       Transformamos ideas en experiencias digitales.
     </p>
+    <Button
+      type="primary"
+      size="large"
+      href="#contacto"
+      className="px-8 py-4"
+    >
+      ¡Habla con nosotros!
+    </Button>
   </div>
 </div>
+
+      <main className="container mx-auto px-4 py-16">
+        <section id="inicio" className="text-center mb-24">
+          <h2 className="text-4xl md:text-5xl font-bold leading-tight mb-6 text-gray-800">
+            Transformación Digital con Soluciones de Software e Inteligencia Artificial
+          </h2>
+
+         <div className="relative w-full h-screen overflow-hidden">
+  
+ 
+
 
 
   {/* Contenido animado */}
@@ -174,14 +185,7 @@ export default function SoftwareCompanyHome() {
     <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
       Impulsa tu negocio con IA y software a medida, respaldado por la última tecnología.
     </p>
-    <Button
-      type="primary"
-      size="large"
-      href="#contacto"
-      className="px-8 py-4"
-    >
-      ¡Habla con nosotros!
-    </Button>
+    
   </motion.div>
 </div>
 
