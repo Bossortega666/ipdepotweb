@@ -35,6 +35,17 @@ const navItems = [
 
 export default function SoftwareCompanyHome() {
   const [activeSection, setActiveSection] = useState("inicio");
+  
+  
+  useEffect(() => {
+  const video = document.querySelector('video');
+  if (video) {
+    video.play().catch(err => {
+      console.log('Autoplay bloqueado:', err);
+    });
+  }
+}, []);
+
 
   useEffect(() => {
     const sections = navItems.map((item) => document.getElementById(item.key));
