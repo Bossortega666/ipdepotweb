@@ -122,15 +122,16 @@ export default function SoftwareCompanyHome() {
        <div className="relative w-full h-screen overflow-hidden">
   {/* Video de fondo */}
   <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    className="absolute inset-0 w-full h-full object-cover"
-  >
-    <source src="/videos/video.webm" type="video/webm"/>
-    Tu navegador no soporta video HTML5.
-  </video>
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="absolute inset-0 w-full h-full object-cover"
+>
+  <source src="/videos/video.webm" type="video/webm" />
+  Tu navegador no soporta video HTML5.
+</video>
+
 
   {/* Overlay para contraste */}
   <div className="absolute inset-0 bg-black/50 z-10"></div>
