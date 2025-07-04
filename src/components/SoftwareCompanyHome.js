@@ -36,6 +36,65 @@ const navItems = [
 export default function SoftwareCompanyHome() {
   const [activeSection, setActiveSection] = useState("inicio");
   
+  // Estado del formulario de contacto
+const [contactData, setContactData] = useState({
+  name: '',
+  email: '',
+  phone: '',
+  companyName: '',
+  companyLine: '',
+  message: ''
+});
+
+const [sending, setSending] = useState(false);
+
+// Maneja cambios en cada input
+const handleContactChange = (e) => {
+  setContactData({
+    ...contactData,
+    [e.target.name]: e.target.value
+  });
+};
+
+// Maneja el submit del formulario
+const handleContactSubmit = async (e) => {
+  e.preventDefault();
+  setSending(true);
+  try {
+    const response = await fetch(
+      'https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/SendEmail',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contactData)
+      }
+    );
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert('✅ Mensaje enviado: ' + result.message);
+      setContactData({
+        name: '',
+        email: '',
+        phone: '',
+        companyName: '',
+        companyLine: '',
+        message: ''
+      });
+    } else {
+      alert('❌ Error: ' + result.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert('❌ Hubo un error al enviar el mensaje.');
+  } finally {
+    setSending(false);
+  }
+};
+
   
   useEffect(() => {
   const video = document.querySelector('video');
@@ -137,6 +196,7 @@ export default function SoftwareCompanyHome() {
   loop
   muted
   playsInline
+  controls
   className="absolute inset-0 w-full h-full object-cover"
 >
   <source src="/videos/video.webm" type="video/webm" />
@@ -193,7 +253,7 @@ export default function SoftwareCompanyHome() {
       </span>
     </div>
     <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow">
-      Innovación sin límites
+   "Tu socio estratégico en la nube: expertos en diseño, implementación y gestión de soluciones cloud de última generación."
     </h1>
     <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
       Impulsa tu negocio con IA y software a medida, respaldado por la última tecnología.
@@ -230,17 +290,30 @@ export default function SoftwareCompanyHome() {
         <section id="servicios" className="grid md:grid-cols-3 gap-8 mb-24">
           {[
             {
-              title: "Software a medida",
-              desc: "Soluciones personalizadas para tus procesos empresariales.",
+              title: "Software a Medida",
+              desc: "Descubre el poder de las soluciones personalizadas, diseñadas específicamente para optimizar y transformar tus procesos empresariales.",
             },
             {
               title: "Integración de IA",
-              desc: "Automatiza decisiones y mejora tus servicios con inteligencia artificial.",
+              desc: "Transforma la forma en que operas con soluciones inteligentes y personalizadas, diseñadas para adaptarse a cada proceso de tu negocio. Hoy, la combinación de software a medida con Inteligencia Artificial (IA) abre un mundo de posibilidades: Automatiza tareas repetitivas. Optimiza recursos con análisis predictivo. Toma decisiones estratégicas basadas en datos reales.",
             },
             {
-              title: "Consultoría UX/UI",
-              desc: "Diseño de interfaces intuitivas centradas en el usuario.",
+              title: "Reconocimiento Facial con IA",
+              desc: "ntegra la Inteligencia Artificial con Reconocimiento Facial y transforma la forma en que gestionas la seguridad, los accesos y la autenticación de usuarios.",
             },
+            {
+              title: "Biometría de Voz: Seguridad y Autenticación",
+              desc: "Impulsada por Inteligencia Artificial y servicios líderes como AWS Voice ID, la biometría de voz analiza patrones vocales, tonos, ritmos y frecuencias, creando una “huella vocal” única para cada usuario.",
+            },
+            {
+              title: "Aplicaciones Serverless Offline",
+              desc: "Combina la arquitectura serverless con capacidades offline y ofrece experiencias digitales sin interrupciones, incluso cuando no hay conexión a internet.",
+            },
+            {
+              title: "Integración de Dispositivos Multimarcas",
+              desc: "Hoy, la diversidad de equipos y marcas no debe ser un obstáculo para tu empresa. Con soluciones de integración inteligente, conecta dispositivos multimarcas a tus sistemas, logrando una operación fluida, segura y centralizada.",
+            },
+
           ].map((service, index) => (
             <motion.div
               key={index}
@@ -299,41 +372,69 @@ export default function SoftwareCompanyHome() {
             Envíenos un mensaje y un experto en Transformación Digital se comunicará con usted.
           </p>
 
-          <form className="space-y-6 text-left">
+          <form onSubmit={handleContactSubmit} className="space-y-6 text-left">
+
             <input
               type="text"
+              name="name"
               placeholder="Nombre / Name"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={contactData.name}
+              onChange={handleContactChange}
+            
+
             />
             <input
               type="email"
+              name="email"
               placeholder="Correo electrónico / Email"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+              value={contactData.email}
+              onChange={handleContactChange}
+           />
             <input
               type="tel"
+              name="phone"
               placeholder="Teléfono / Telephone"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={contactData.phone}
+              onChange={handleContactChange}            
             />
             <input
               type="text"
+              name="companyName"
               placeholder="Nombre de la empresa / Name of the company"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={contactData.companyName}
+              onChange={handleContactChange} 
             />
             <input
               type="text"
+              name="companyLine"
               placeholder="Giro de la empresa / Company line"
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={contactData.companyLine}
+              onChange={handleContactChange} 
             />
             <textarea
               placeholder="Explícanos de tu proyecto / Tell us about your project"
+              name="message"
               rows={4}
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={contactData.message}
+              onChange={handleContactChange}
             ></textarea>
 
-            <Button type="primary" size="large" className="w-full mt-4">
-              Enviar mensaje
+           <Button
+              htmlType="submit"
+              type="default"
+              size="large"
+              className="w-full mt-4 bg-blue-600 hover:bg-blue-600 focus:bg-blue-600 text-white border-none"
+              disabled={sending}
+            >
+              {sending ? 'Enviando...' : 'Enviar mensaje'}
             </Button>
+
           </form>
         </div>
       </section>
