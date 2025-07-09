@@ -8,7 +8,7 @@ module.exports = {
         
         backgroundImage: {
         // Clave: 'ipdepot', puedes usarla luego como bg-ipdepot
-        ipdepot: "url('/src/assets/background.webp')",
+        'ipdepot': "url('/src/assets/background1.svg')", 
       },
     },
   },
