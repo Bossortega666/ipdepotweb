@@ -17,8 +17,13 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useTranslation } from 'react-i18next';
+import Swal from 'sweetalert2';
 
 import { motion } from "framer-motion";
+import toast, { Toaster } from 'react-hot-toast';
+
+
+
 
 //import heroImage2 from "../assets/banner-ai2.png";
 import heroImage3 from "../assets/banner-ai3.png";
@@ -97,8 +102,18 @@ const ClaudeChat = () => {
 
   const handleClaudeSend = async () => {
     if (!prompt.trim()) {
-      alert("⚠️ Por favor, ingresa un texto para enviar a la IA.");
-      return;
+      
+        toast('⚠️ Por favor, ingresa un texto para enviar a la IA.', {
+    icon: '🤖',
+    style: {
+      borderRadius: '8px',
+      background: '#0f172a',
+      color: '#fff',
+    },
+  });
+  return;
+  
+
     }
 
     setLoading(true);
@@ -135,75 +150,87 @@ const ClaudeChat = () => {
   };
 
   return (
-    <motion.div 
-    initial={{ opacity: 0, y: 30 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, ease: "easeOut" }}
-    className="my-12 max-w-xl mx-auto"
-  >
-    <Card className="backdrop-blur-lg bg-white/30 border border-gray-200 rounded-2xl shadow-xl">
-      <div className="flex items-center justify-center mb-4">
-      
+    <motion.div
+  initial={{ opacity: 0, y: 30 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, ease: "easeOut" }}
+  className="relative my-12 max-w-xl mx-auto"
+>
+  <Card className="relative backdrop-blur-md bg-white/70 border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+    <div className="flex items-center justify-center mb-4">
+      <RobotIcon className="text-4xl text-cyan-700 mr-2" />
+      <h3 className="text-2xl font-semibold text-gray-900 text-center">
+        IA IP DEPOT · Bedrock
+      </h3>
+    </div>
 
- <RobotIcon className="text-3xl text-cyan-600 mr-2" />
+    <TextareaAutosize
+      minRows={4}
+      maxRows={8}
+      value={prompt}
+      onChange={(e) => setPrompt(e.target.value)}
+      placeholder="Escribe tu pregunta para la IA..."
+      className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 placeholder:text-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 transition resize-none shadow-inner"
+    />
 
-        <h3 className="text-2xl font-bold text-center text-gray-800">IA IP DEPOT · Bedrock</h3>
-      </div>
+    <Button
+      type="primary"
+      onClick={handleClaudeSend}
+      className="w-full mt-4 bg-cyan-700 hover:bg-cyan-800 text-white font-semibold py-3 rounded-xl shadow transition"
+    >
+      {loading ? "Generando respuesta..." : "Enviar pregunta"}
+    </Button>
 
-      <TextareaAutosize
-        minRows={4}
-        maxRows={8}
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Escribe tu pregunta para la IA..."
-        className="w-full bg-white/40 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition placeholder:text-gray-500 text-gray-800 resize-none shadow-inner backdrop-blur"
-      />
+    <div className="mt-6">
+      <h4 className="text-lg font-semibold text-gray-800 mb-2">Respuesta:</h4>
 
-      <Button
-        type="primary"
-        onClick={handleClaudeSend}
-        className="w-full mt-4 bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-semibold py-3 rounded-xl shadow hover:shadow-lg hover:from-cyan-700 hover:to-blue-800 transition"
+      <div className="max-h-[400px] overflow-y-auto">
+        {loading ? (
+  <div className="flex flex-col items-center justify-center p-6">
+    <div className="bg-white/60 p-4 rounded-full shadow-lg backdrop-blur-sm">
+      {/* SVG Spinner IA */}
+      <svg
+        className="animate-spin h-12 w-12"
+        viewBox="0 0 50 50"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        {loading ? "Generando respuesta..." : "Enviar pregunta"}
-      </Button>
-
-      <div className="mt-6">
-        <h4 className="text-lg font-semibold text-gray-700 mb-2">Respuesta:</h4>
-
-        <div className="max-h-[400px] overflow-y-auto transition-all duration-300">
-          {loading ? (
-            <div className="flex items-center justify-center p-4 text-blue-700">
-              <svg
-                className="animate-spin h-6 w-6 mr-2 text-blue-700"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8v8H4z"
-                ></path>
-              </svg>
-              Generando respuesta...
-            </div>
-          ) : (
-            <pre className="bg-white/30 border border-gray-200 rounded-xl p-4 text-gray-800 whitespace-pre-wrap break-words shadow-inner backdrop-blur">
-              {response || "La respuesta aparecerá aquí..."}
-            </pre>
-          )}
-        </div>
+        <defs>
+          <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#06b6d4" />
+            <stop offset="100%" stopColor="#3b82f6" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx="25"
+          cy="25"
+          r="20"
+          stroke="url(#spinnerGradient)"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray="100"
+          strokeDashoffset="60"
+        />
+      </svg>
+    </div>
+            Generando respuesta...
+          </div>
+        ) : (
+          <motion.pre
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white border border-gray-200 rounded-xl p-4 text-gray-900 whitespace-pre-wrap break-words shadow-inner"
+          >
+            {response || "La respuesta aparecerá aquí..."}
+          </motion.pre>
+        )}
       </div>
-    </Card>
-  </motion.div>
+    </div>
+  </Card>
+</motion.div>
+
+
   );
 };
 
@@ -215,6 +242,7 @@ export default function SoftwareCompanyHome() {
   const [activeSection, setActiveSection] = useState("inicio");
   
   // Estado del formulario de contacto
+  
 const [contactData, setContactData] = useState({
   name: '',
   email: '',
@@ -612,10 +640,11 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </section>
 
       <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
-        © 2025 DEPOT. Todos los derechos reservados. v 1.0.1
+        © 2025 DEPOT. Todos los derechos reservados. v 1.2
       </footer>
       
        <WhatsappButton />
+       <Toaster position="top-center" />
 
     </div>
   );
