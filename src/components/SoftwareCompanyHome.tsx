@@ -21,6 +21,13 @@ import Swal from 'sweetalert2';
 
 import { motion } from "framer-motion";
 import toast, { Toaster } from 'react-hot-toast';
+import softwareImage from '../assets/uno.png';
+import iaImage from "../assets/dos.png";
+import rekog from "../assets/3.png";
+import voz from "../assets/cuatro.png";
+import thales from "../assets/thales.png"
+import amplyfy from "../assets/amplify.png"
+
 
 
 
@@ -34,6 +41,9 @@ import logo from "../assets/logo.png";
 import { FaRobot } from "react-icons/fa";
 import type { FC } from 'react';
 import { ElementType } from 'react';
+import WalletIntegrationBlock from './WalletIntegrationBlock'; 
+// ajusta la ruta según tu estructura de carpetas
+
 
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -486,46 +496,109 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
         {/* Servicios animados */}
         <section id="servicios" className="grid md:grid-cols-3 gap-8 mb-24">
-          {[
-            {
-              title: "Software a Medida",
-              desc: "Descubre el poder de las soluciones personalizadas, diseñadas específicamente para optimizar y transformar tus procesos empresariales.",
-            },
-            {
-              title: "Integración de IA",
-              desc: "Transforma la forma en que operas con soluciones inteligentes y personalizadas, diseñadas para adaptarse a cada proceso de tu negocio. Hoy, la combinación de software a medida con Inteligencia Artificial (IA) abre un mundo de posibilidades: Automatiza tareas repetitivas. Optimiza recursos con análisis predictivo. Toma decisiones estratégicas basadas en datos reales.",
-            },
-            {
-              title: "Reconocimiento Facial con IA",
-              desc: "ntegra la Inteligencia Artificial con Reconocimiento Facial y transforma la forma en que gestionas la seguridad, los accesos y la autenticación de usuarios.",
-            },
-            {
-              title: "Biometría de Voz: Seguridad y Autenticación",
-              desc: "Impulsada por Inteligencia Artificial y servicios líderes como AWS Voice ID, la biometría de voz analiza patrones vocales, tonos, ritmos y frecuencias, creando una “huella vocal” única para cada usuario.",
-            },
-            {
-              title: "Aplicaciones Serverless Offline",
-              desc: "Combina la arquitectura serverless con capacidades offline y ofrece experiencias digitales sin interrupciones, incluso cuando no hay conexión a internet.",
-            },
-            {
-              title: "Integración de Dispositivos Multimarcas",
-              desc: "Hoy, la diversidad de equipos y marcas no debe ser un obstáculo para tu empresa. Con soluciones de integración inteligente, conecta dispositivos multimarcas a tus sistemas, logrando una operación fluida, segura y centralizada.",
-            },
+  {[
+    {
+      title: "Software a Medida",
+      desc: "Descubre el poder de las soluciones personalizadas, diseñadas específicamente para optimizar y transformar tus procesos empresariales.",
+    },
+    {
+      title: "Integración de IA",
+      desc: "Transforma la forma en que operas con soluciones inteligentes y personalizadas, diseñadas para adaptarse a cada proceso de tu negocio. Hoy, la combinación de software a medida con Inteligencia Artificial (IA) abre un mundo de posibilidades: Automatiza tareas repetitivas. Optimiza recursos con análisis predictivo. Toma decisiones estratégicas basadas en datos reales.",
+    },
+    {
+      title: "Reconocimiento Facial con IA",
+      desc: "Integra la Inteligencia Artificial con Reconocimiento Facial y transforma la forma en que gestionas la seguridad, los accesos y la autenticación de usuarios.",
+    },
+    {
+      title: "Biometría de Voz: Seguridad y Autenticación",
+      desc: "Impulsada por Inteligencia Artificial y servicios líderes como AWS Voice ID, la biometría de voz analiza patrones vocales, tonos, ritmos y frecuencias, creando una “huella vocal” única para cada usuario.",
+    },
+    {
+      title: "Aplicaciones Serverless Offline",
+      desc: "Combina la arquitectura serverless con capacidades offline y ofrece experiencias digitales sin interrupciones, incluso cuando no hay conexión a internet.",
+    },
+    {
+      title: "Integración de Dispositivos Multimarcas",
+      desc: "Hoy, la diversidad de equipos y marcas no debe ser un obstáculo para tu empresa. Con soluciones de integración inteligente, conecta dispositivos multimarcas a tus sistemas, logrando una operación fluida, segura y centralizada.",
+    },
+  ].map((service, index) => (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.6, delay: index * 0.2 }}
+      viewport={{ once: true }}
+    >
+     <Card
+  hoverable
+  className="relative flex flex-col items-start overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-transform duration-500 hover:shadow-xl hover:scale-105"
+>
+  {/* Imagen condicional */}
+  {service.title === "Software a Medida" && (
+    <img
+      src={softwareImage}
+      alt="Software a Medida"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
 
-          ].map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
-            >
-              <Card title={service.title} hoverable className="shadow-md">
-                <p>{service.desc}</p>
-              </Card>
-            </motion.div>
-          ))}
-        </section>
+  {service.title === "Integración de IA" && (
+    <img
+      src={iaImage}
+      alt="Integración de IA"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
+   {service.title === "Reconocimiento Facial con IA" && (
+    <img
+      src={rekog}
+      alt="Reconocimiento Facial con IA"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
+  {service.title === "Biometría de Voz: Seguridad y Autenticación" && (
+    <img
+      src={voz}
+      alt="Biometría de Voz: Seguridad y Autenticación"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
+  {service.title === "Integración de Dispositivos Multimarcas" && (
+    <img
+      src={thales}
+      alt="Integración de Dispositivos Multimarcasn"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
+  {service.title === "Aplicaciones Serverless Offline" && (
+    <img
+      src={amplyfy}
+      alt="Aplicaciones Serverless Offline"
+      className="w-full object-cover h-40 md:h-52 rounded-t-2xl"
+    />
+  )}
+
+  {/* Contenido */}
+  <div className="p-6 flex flex-col gap-4">
+    <h4 className="text-xl font-bold text-gray-800">
+      {service.title}
+    </h4>
+    <p className="text-gray-600 text-base leading-relaxed">
+      {service.desc}
+    </p>
+    <button className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">
+      Saber más
+      <ArrowRightOutlined />
+    </button>
+  </div>
+</Card>
+
+
+      
+    </motion.div>
+  ))}
+</section>
+
 
         {/* Proyectos animados */}
         <section id="proyectos" className="text-center mb-24">
