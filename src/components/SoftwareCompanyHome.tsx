@@ -37,6 +37,8 @@ import heroImage3 from "../assets/banner-ai3.png";
 import heroImage4 from "../assets/banner-ai4.png";
 import heroImage5 from "../assets/banner-ai5.png";
 import logo from "../assets/logo.png";
+import TechStackSection from './TechStackSection'; // o '../components/TechStackSection' según tu estructura
+
 
 import { FaRobot } from "react-icons/fa";
 import type { FC } from 'react';
@@ -160,85 +162,84 @@ const ClaudeChat = () => {
   };
 
   return (
-    <motion.div
+   <motion.div
   initial={{ opacity: 0, y: 30 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.8, ease: "easeOut" }}
-  className="relative my-12 max-w-xl mx-auto"
+  className="relative my-16 w-full max-w-2xl mx-auto px-4"
 >
-  <Card className="relative backdrop-blur-md bg-white/70 border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
-    <div className="flex items-center justify-center mb-4">
-      <RobotIcon className="text-4xl text-cyan-700 mr-2" />
-      <h3 className="text-2xl font-semibold text-gray-900 text-center">
-        IA IP DEPOT · Bedrock
-      </h3>
-    </div>
+  <div className="relative rounded-3xl p-8 bg-white/80 backdrop-blur-lg border border-blue-200/30 shadow-[0_20px_70px_-20px_rgba(0,0,0,0.3)] overflow-hidden transition hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.4)]">
+    
+    {/* Sutil glow corporativo */}
+    <div className="absolute -top-10 -right-10 w-60 h-60 bg-gradient-to-br from-blue-500/10 via-cyan-500/10 to-indigo-500/10 rounded-full blur-3xl"></div>
 
-    <TextareaAutosize
-      minRows={4}
-      maxRows={8}
-      value={prompt}
-      onChange={(e) => setPrompt(e.target.value)}
-      placeholder="Escribe tu pregunta para la IA..."
-      className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 placeholder:text-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-600 transition resize-none shadow-inner"
-    />
+    <div className="relative z-10 flex flex-col gap-6">
+      {/* Encabezado */}
+      
+      <div className="flex items-center gap-3">
+        
+        <motion.div
+  animate={{
+    y: [0, -5, 0],
+    rotate: [0, -2, 2, -2, 0],
+  }}
+  transition={{
+    repeat: Infinity,
+    duration: 3,
+    ease: "easeInOut",
+  }}
+>
+<RobotIcon className="text-4xl text-cyan-600 drop-shadow" />
+</motion.div>
+        <h3 className="text-2xl md:text-3xl font-extrabold text-gray-800">
+          IA IP DEPOT · Bedrock
+        </h3>
+      </div>
 
-    <Button
-      type="primary"
-      onClick={handleClaudeSend}
-      className="w-full mt-4 bg-cyan-700 hover:bg-cyan-800 text-white font-semibold py-3 rounded-xl shadow transition"
-    >
-      {loading ? "Generando respuesta..." : "Enviar pregunta"}
-    </Button>
+      {/* Textarea */}
+      <TextareaAutosize
+        minRows={4}
+        maxRows={8}
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Pregúntale algo a la IA..."
+        className="w-full rounded-2xl border border-blue-100 px-5 py-4 bg-white/70 backdrop-blur-sm placeholder:text-gray-500 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition shadow-inner"
+      />
 
-    <div className="mt-6">
-      <h4 className="text-lg font-semibold text-gray-800 mb-2">Respuesta:</h4>
-
-      <div className="max-h-[400px] overflow-y-auto">
-        {loading ? (
-  <div className="flex flex-col items-center justify-center p-6">
-    <div className="bg-white/60 p-4 rounded-full shadow-lg backdrop-blur-sm">
-      {/* SVG Spinner IA */}
-      <svg
-        className="animate-spin h-12 w-12"
-        viewBox="0 0 50 50"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      {/* Botón primario */}
+      <button
+        onClick={handleClaudeSend}
+        disabled={loading}
+        className="w-full rounded-full bg-gradient-to-r from-cyan-600 to-blue-700 hover:from-cyan-700 hover:to-blue-800 text-white font-semibold py-3 shadow-md transition hover:shadow-lg"
       >
-        <defs>
-          <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#3b82f6" />
-          </linearGradient>
-        </defs>
-        <circle
-          cx="25"
-          cy="25"
-          r="20"
-          stroke="url(#spinnerGradient)"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeDasharray="100"
-          strokeDashoffset="60"
-        />
-      </svg>
-    </div>
-            Generando respuesta...
-          </div>
-        ) : (
-          <motion.pre
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white border border-gray-200 rounded-xl p-4 text-gray-900 whitespace-pre-wrap break-words shadow-inner"
-          >
-            {response || "La respuesta aparecerá aquí..."}
-          </motion.pre>
-        )}
+        {loading ? "Generando respuesta..." : "Enviar pregunta"}
+      </button>
+
+      {/* Respuesta */}
+      <div>
+        <h4 className="text-base font-semibold text-gray-700 mb-2">Respuesta:</h4>
+        <div className="max-h-[400px] overflow-y-auto">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center p-6">
+              <div className="h-12 w-12 rounded-full border-t-4 border-b-4 border-cyan-500 animate-spin"></div>
+              <p className="mt-4 text-gray-600 font-medium">Generando respuesta...</p>
+            </div>
+          ) : (
+            <motion.pre
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white/60 border border-blue-100 rounded-xl p-4 text-gray-800 whitespace-pre-wrap break-words shadow-inner"
+            >
+              {response || ""}
+            </motion.pre>
+          )}
+        </div>
       </div>
     </div>
-  </Card>
+  </div>
 </motion.div>
+
 
 
   );
@@ -455,35 +456,40 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
             {}
           <ClaudeChat />
-         <div className="relative w-full h-screen overflow-hidden">
+        
   
  
 
 
 
   {/* Contenido animado */}
-  <motion.div
-  className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4"
-  initial={{ opacity: 0, y: 50 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true }}
-  transition={{ duration: 0.8, ease: 'easeOut' }}
+<motion.div
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 1, ease: 'easeOut' }}
+  className="relative z-10 px-6 py-24 md:py-32 text-center max-w-7xl mx-auto"
 >
-  <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg">
-    "Tu socio estratégico en la nube: expertos en diseño, implementación y gestión de soluciones cloud de última generación."
-  </h1>
-  <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow-lg">
-    Impulsa tu negocio con IA y software a medida, respaldado por la última tecnología.
-  </p>
+  <div className="bg-gradient-to-br from-white/70 to-white/30 backdrop-blur-2xl border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.15)] rounded-3xl p-10 md:p-20">
+    
+    <h1 className="text-4xl md:text-7xl font-black text-gray-900 tracking-tight leading-tight drop-shadow-sm">
+      Tu socio estratégico en la nube
+    </h1>
+
+    <p className="mt-6 text-xl md:text-2xl text-gray-800 font-medium drop-shadow-sm max-w-4xl mx-auto leading-relaxed">
+      Expertos en diseño, implementación y gestión de soluciones cloud de última generación para organizaciones visionarias.
+    </p>
+
+    <p className="mt-8 text-lg md:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+      Impulsa tu negocio con <span className="text-indigo-600 font-semibold">inteligencia artificial</span>, automatización, y software de alto rendimiento,
+      todo respaldado por arquitectura moderna y escalable.
+    </p>
+  </div>
 </motion.div>
 
-</div>
+<p className="text-center text-gray-900 text-xl md:text-2xl font-semibold tracking-wide max-w-5xl mx-auto mt-20 px-8 py-8 bg-gradient-to-br from-white/80 to-gray-100/70 backdrop-blur-2xl border border-gray-300 shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-3xl">
+  <span className="text-indigo-600 font-bold">Transformamos</span> ideas complejas en <span className="text-indigo-500 font-bold">soluciones digitales</span> elegantes, funcionales y preparadas para el futuro.
+</p>
 
-
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
-            Transformamos tus ideas en soluciones digitales con inteligencia artificial
-            de vanguardia y diseño de experiencia de usuario de clase mundial.
-          </p>
 
           
         </section>
@@ -495,6 +501,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         </h3>
 
         {/* Servicios animados */}
+        
         <section id="servicios" className="grid md:grid-cols-3 gap-8 mb-24">
   {[
     {
@@ -633,7 +640,9 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   </div>
 </section>
 
+
       </main>
+      <TechStackSection /> {/* Sección de tecnologías */}
       <section id="contacto" className="bg-white py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h3 className="text-3xl font-bold mb-6">
