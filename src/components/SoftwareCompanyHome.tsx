@@ -38,6 +38,7 @@ import heroImage4 from "../assets/banner-ai4.png";
 import heroImage5 from "../assets/banner-ai5.png";
 import logo from "../assets/logo.png";
 import TechStackSection from './TechStackSection'; // o '../components/TechStackSection' según tu estructura
+import { Modal } from "antd";
 
 
 import { FaRobot } from "react-icons/fa";
@@ -275,6 +276,21 @@ const handleContactChange = (
   });
 };
 
+const [openModal, setOpenModal] = useState(false); // Modales , saber mas...
+const [selectedService, setSelectedService] = useState<{ title: string; desc: string; image?: string } | null>(null);
+
+
+const handleOpenModal = (service: { title: string; desc: string }) => {
+  setSelectedService(service);
+  setOpenModal(true);
+};
+
+const handleCloseModal = () => {
+  setOpenModal(false);
+  setSelectedService(null);
+};
+
+
 
 
 // Maneja el submit del formulario
@@ -499,6 +515,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
             Servicios
           </span>
         </h3>
+        
 
         {/* Servicios animados */}
         
@@ -506,28 +523,35 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   {[
     {
       title: "Software a Medida",
-      desc: "Descubre el poder de las soluciones personalizadas, diseñadas específicamente para optimizar y transformar tus procesos empresariales.",
+      desc: "En IP DEPOT, entendemos que cada dependencia gubernamental enfrenta retos únicos en materia de gestión, transparencia y recaudación. Por ello, desarrollamos software a medida, diseñado específicamente para modernizar procesos, reducir tiempos operativos y fortalecer la eficiencia institucional.Nuestras soluciones tecnológicas permiten a los gobiernos automatizar trámites, digitalizar servicios y optimizar la captación de ingresos, generando un impacto directo en la mejora de la atención ciudadana y el cumplimiento de metas fiscales.Trabajamos de la mano con cada entidad para construir plataformas sólidas, seguras y escalables, que se adaptan a los marcos normativos y necesidades particulares de cada organismo. Desde sistemas de licenciamiento y control vehicular hasta plataformas de fiscalización inteligente, en IP DEPOT transformamos la tecnología en una herramienta estratégica para incrementar la recaudación con transparencia y eficiencia.Con IP DEPOT, la innovación se convierte en política pública.",
+      image:softwareImage
     },
     {
       title: "Integración de IA",
       desc: "Transforma la forma en que operas con soluciones inteligentes y personalizadas, diseñadas para adaptarse a cada proceso de tu negocio. Hoy, la combinación de software a medida con Inteligencia Artificial (IA) abre un mundo de posibilidades: Automatiza tareas repetitivas. Optimiza recursos con análisis predictivo. Toma decisiones estratégicas basadas en datos reales.",
+      image:iaImage
     },
     {
       title: "Reconocimiento Facial con IA",
       desc: "Integra la Inteligencia Artificial con Reconocimiento Facial y transforma la forma en que gestionas la seguridad, los accesos y la autenticación de usuarios.",
+      image:rekog
     },
     {
       title: "Biometría de Voz: Seguridad y Autenticación",
       desc: "Impulsada por Inteligencia Artificial y servicios líderes como AWS Voice ID, la biometría de voz analiza patrones vocales, tonos, ritmos y frecuencias, creando una “huella vocal” única para cada usuario.",
+    image:voz
     },
     {
       title: "Aplicaciones Serverless Offline",
       desc: "Combina la arquitectura serverless con capacidades offline y ofrece experiencias digitales sin interrupciones, incluso cuando no hay conexión a internet.",
+    image:amplyfy
     },
     {
       title: "Integración de Dispositivos Multimarcas",
       desc: "Hoy, la diversidad de equipos y marcas no debe ser un obstáculo para tu empresa. Con soluciones de integración inteligente, conecta dispositivos multimarcas a tus sistemas, logrando una operación fluida, segura y centralizada.",
+    image:thales
     },
+    
   ].map((service, index) => (
     <motion.div
       key={index}
@@ -591,12 +615,19 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       {service.title}
     </h4>
     <p className="text-gray-600 text-base leading-relaxed">
-      {service.desc}
-    </p>
-    <button className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition">
-      Saber más
-      <ArrowRightOutlined />
-    </button>
+  {service.desc.length > 200
+    ? service.desc.slice(0, 200) + "..."
+    : service.desc}
+</p>
+
+    <button
+  onClick={() => handleOpenModal(service)}
+  className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-700 transition"
+>
+  Saber más
+  <ArrowRightOutlined />
+</button>
+
   </div>
 </Card>
 
@@ -643,6 +674,46 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
       </main>
       <TechStackSection /> {/* Sección de tecnologías */}
+     <Modal
+  title={selectedService?.title}
+  open={openModal}
+  onCancel={handleCloseModal}
+  footer={null}
+  centered
+>
+  <div className="space-y-4 text-gray-800">
+    {selectedService?.image && (
+      <img
+        src={selectedService.image}
+        alt={selectedService.title}
+        className="w-full h-48 object-cover rounded-xl shadow"
+      />
+    )}
+
+    <p className="leading-relaxed text-base whitespace-pre-line">
+      {selectedService?.desc}
+    </p>
+
+    <blockquote className="italic text-indigo-700 font-semibold border-l-4 pl-4 border-indigo-400 bg-indigo-50 p-3 rounded-md">
+      “Transformamos tecnología en soluciones que generan resultados reales.”
+    </blockquote>
+
+    <ul className="list-disc list-inside text-sm text-gray-700">
+      <li>✅ Aumento de eficiencia operativa</li>
+      <li>🔐 Seguridad avanzada con IA</li>
+      <li>📊 Decisiones estratégicas con datos en tiempo real</li>
+    </ul>
+
+    <div className="mt-6 text-center">
+      <a
+        href="#contacto"
+        className="inline-block rounded-full bg-blue-600 px-6 py-2 text-white font-semibold hover:bg-blue-700 transition"
+      >
+        Solicita una demo gratuita
+      </a>
+    </div>
+  </div>
+</Modal>
       <section id="contacto" className="bg-white py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <h3 className="text-3xl font-bold mb-6">
@@ -722,7 +793,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </section>
 
       <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
-        © 2025 DEPOT. Todos los derechos reservados. v 1.2
+        © 2025 DEPOT. Todos los derechos reservados. v 1.3
       </footer>
       
        <WhatsappButton />
