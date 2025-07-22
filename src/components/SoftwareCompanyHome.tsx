@@ -688,18 +688,20 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   <FadeInOnScroll delay={0.2}>
     <div className="px-4">
       <Swiper
-        spaceBetween={30}
-        centeredSlides
-        loop
-        autoplay={{ delay: 2500, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
-        breakpoints={{
-          0: { slidesPerView: 1.2 },
-          640: { slidesPerView: 2 },
-          1024: { slidesPerView: 3 }
-        }}
-        className="flex items-center justify-center"
-      >
+  modules={[Autoplay, Pagination]}
+  spaceBetween={30}
+  centeredSlides
+  loop
+  autoplay={{ delay: 2500, disableOnInteraction: false }}
+  pagination={{ clickable: true }}
+  breakpoints={{
+    0: { slidesPerView: 1.2 },
+    640: { slidesPerView: 2 },
+    1024: { slidesPerView: 3 },
+  }}
+  className="flex items-center justify-center"
+>
+
         {[{
           src: "/clientes/NuevoLeon.png",
           nombre: "Gobierno del Estado de Nuevo León"
