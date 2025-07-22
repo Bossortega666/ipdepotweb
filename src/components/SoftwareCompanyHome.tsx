@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { FaWhatsapp } from 'react-icons/fa';
+import FadeInOnScroll from "../components/FadeInOnScroll";
+
+
 
 //import type { FC } from "react";
 import "antd/dist/reset.css";
@@ -673,6 +676,74 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
 
       </main>
+    <section id="clientes" className="my-24 text-center">
+  <FadeInOnScroll>
+    <h3 className="text-3xl font-bold mb-10">
+      <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
+        Nuestros Clientes
+      </span>
+    </h3>
+  </FadeInOnScroll>
+
+  <FadeInOnScroll delay={0.2}>
+    <div className="px-4">
+      <Swiper
+        spaceBetween={30}
+        centeredSlides
+        loop
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        breakpoints={{
+          0: { slidesPerView: 1.2 },
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 }
+        }}
+        className="flex items-center justify-center"
+      >
+        {[{
+          src: "/clientes/NuevoLeon.png",
+          nombre: "Gobierno del Estado de Nuevo León"
+        }, {
+          src: "/clientes/QuintanaRoo.png",
+          nombre: "Gobierno del Estado de Quintana Roo"
+         } , {
+          src: "/clientes/imoveqroo.png",
+          nombre: "Instituto de movilidad de Estado de Quintana Roo"
+          } , {
+          src: "/clientes/transitobj.png",
+          nombre: "Secretaria de Seguridad Ciudadana y Transito Benito Juarez"
+        }].map(({ src, nombre }, index) => (
+          <SwiperSlide key={index} className="flex items-center justify-center">
+            <FadeInOnScroll delay={index * 0.2}>
+              <div className="group relative p-4 rounded-xl hover:scale-105 transition-transform duration-500 ease-out text-center">
+                {/* Efecto glow */}
+                <div className="absolute inset-0 rounded-xl bg-cyan-600/10 blur-lg opacity-0 group-hover:opacity-50 transition duration-700"></div>
+
+                {/* Logo */}
+                <img
+                  src={src.trim()}
+                  alt={`Cliente ${index + 1}`}
+                  className="h-32 w-32 mx-auto object-contain grayscale group-hover:grayscale-0 transition duration-500 ease-in-out group-hover:rotate-1 drop-shadow-xl"
+
+                />
+
+                {/* Texto institucional */}
+                <p className="mt-4 text-sm font-semibold text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                  {nombre}
+                </p>
+              </div>
+            </FadeInOnScroll>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
+  </FadeInOnScroll>
+</section>
+
+
+
+
+
       <TechStackSection /> {/* Sección de tecnologías */}
      <Modal
   title={selectedService?.title}
