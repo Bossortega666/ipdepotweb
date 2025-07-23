@@ -70,7 +70,8 @@ const proyectos = [
     titulo: "Sistema de Emisión de Licencias Quintana Roo",
     descripcion:
       "En Quintana Roo transformamos la emisión de licencias de conducir con un sistema innovador, impulsado por Inteligencia Artificial (IA) y módulos de biometría multicanal que garantizan la autenticación del ciudadano de forma rápida, precisa y segura.",
-  },
+  imagen:"/proyectos/camioneta.png"
+    },
   {
     id: 2,
     titulo: "Automatización de Procesos Gubernamentales",
@@ -254,6 +255,38 @@ const RobotIcon = FaRobot as unknown as FC<{ className?: string }>;
 
 
 export default function SoftwareCompanyHome() {
+
+//modal de proyectos 
+ const [modalAbierto, setModalAbierto] = useState(false);
+  const [proyectoActivo, setProyectoActivo] = useState<{
+    id: number;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+  } | null>(null);
+
+  const handleOpenProyectoModal = (proyecto: {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    imagen: string;
+  }) => {
+    setProyectoActivo(proyecto);
+    setModalAbierto(true);
+  };
+
+  const handleCloseProyectoModal = () => {
+    setModalAbierto(false);
+    setProyectoActivo(null);
+  };
+
+
+
+
+
+
+
+
   const [activeSection, setActiveSection] = useState("inicio");
   
   // Estado del formulario de contacto
@@ -642,36 +675,109 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 
 
         {/* Proyectos animados */}
-        <section id="proyectos" className="text-center mb-24">
-  <h3 className="text-3xl font-bold mb-6">
-    <span className="bg-gradient-to-r from-blue-800 to-cyan-700 bg-clip-text text-transparent">
-      Proyectos Destacados
-    </span>
-  </h3>
+        <section id="proyectos" className="py-24 px-4 md:px-12 lg:px-20 bg-white">
+  <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
+    Nuestros Proyectos
+  </h2>
 
-  <p className="text-gray-600 max-w-xl mx-auto mb-10">
-    Hemos colaborado con startups y grandes corporaciones para implementar soluciones tecnológicas innovadoras.
-  </p>
-
-  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-    {proyectos.map((proyecto, index) => (
-      <motion.div
-        key={proyecto.id}
-        initial={{ opacity: 0, y: 50, scale: 0.95 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, delay: index * 0.2 }}
-        viewport={{ once: true }}
+  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {proyectos.map(({ id, titulo, descripcion, imagen }) => (
+      <div
+        key={id}
+        className="group bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden transition-transform hover:scale-[1.02]"
       >
-        <Card
-          title={proyecto.titulo}
-          hoverable
-          className="transition-transform shadow-md"
-        >
-          <p>{proyecto.descripcion}</p>
-        </Card>
-      </motion.div>
+        <div className="h-48 overflow-hidden">
+          <img
+            src={imagen}
+            alt={titulo}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+
+        <div className="p-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-2">{titulo}</h3>
+          <p className="text-gray-600 text-sm leading-relaxed mb-4">
+            {descripcion}
+          </p>
+          <a
+            href="#contacto"
+            className="inline-block text-sm font-semibold text-cyan-600 hover:text-blue-700 transition"
+          >
+            Solicitar información →
+          </a>
+        </div>
+      </div>
     ))}
   </div>
+  <Modal
+  title={null}
+  open={modalAbierto}
+  onCancel={handleCloseProyectoModal}
+  footer={null}
+  centered
+  width={700}
+  className="rounded-xl overflow-hidden"
+>
+  {proyectoActivo && (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-4 text-gray-800"
+    >
+      <motion.img
+        src={proyectoActivo.imagen}
+        alt={proyectoActivo.titulo}
+        className="w-full h-56 object-cover rounded-xl shadow mb-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      />
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-900"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+      >
+        {proyectoActivo.titulo}
+      </motion.h2>
+
+      <motion.p
+        className="leading-relaxed text-base whitespace-pre-line"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.4 }}
+      >
+        {proyectoActivo.descripcion}
+      </motion.p>
+
+      <motion.blockquote
+        className="italic text-indigo-700 font-semibold border-l-4 pl-4 border-indigo-400 bg-indigo-50 p-3 rounded-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 0.5 }}
+      >
+        “Cada solución nace para resolver un reto real con tecnología de vanguardia.”
+      </motion.blockquote>
+
+      <motion.div
+        className="mt-6 text-center"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6 }}
+      >
+        <a
+          href="#contacto"
+          className="inline-block rounded-full bg-cyan-600 px-6 py-2 text-white font-semibold hover:bg-cyan-700 transition"
+        >
+          Agenda una demo personalizada
+        </a>
+      </motion.div>
+    </motion.div>
+  )}
+</Modal>
+
 </section>
 
 
@@ -688,20 +794,18 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   <FadeInOnScroll delay={0.2}>
     <div className="px-4">
       <Swiper
-  modules={[Autoplay, Pagination]}
-  spaceBetween={30}
-  centeredSlides
-  loop
-  autoplay={{ delay: 2500, disableOnInteraction: false }}
-  pagination={{ clickable: true }}
-  breakpoints={{
-    0: { slidesPerView: 1.2 },
-    640: { slidesPerView: 2 },
-    1024: { slidesPerView: 3 },
-  }}
-  className="flex items-center justify-center"
->
-
+        spaceBetween={30}
+        centeredSlides
+        loop
+        autoplay={{ delay: 2500, disableOnInteraction: false }}
+        pagination={{ clickable: true }}
+        breakpoints={{
+          0: { slidesPerView: 1.2 },
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 }
+        }}
+        className="flex items-center justify-center"
+      >
         {[{
           src: "/clientes/NuevoLeon.png",
           nombre: "Gobierno del Estado de Nuevo León"
