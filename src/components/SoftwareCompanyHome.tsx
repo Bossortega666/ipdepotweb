@@ -794,10 +794,11 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   <FadeInOnScroll delay={0.2}>
     <div className="px-4">
       <Swiper
+        modules={[Autoplay, Pagination]}
         spaceBetween={30}
         centeredSlides
         loop
-        autoplay={{ delay: 2500, disableOnInteraction: false }}
+        autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         breakpoints={{
           0: { slidesPerView: 1.2 },
@@ -970,7 +971,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </section>
 
       <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
-        © 2025 DEPOT. Todos los derechos reservados. v 1.3
+        © 2025 DEPOT. Todos los derechos reservados. v 1000000000000
       </footer>
       
        <WhatsappButton />
