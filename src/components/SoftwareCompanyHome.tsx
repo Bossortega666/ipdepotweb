@@ -819,7 +819,14 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           } , {
           src: "/clientes/transitobj.png",
           nombre: "Secretaria de Seguridad Ciudadana y Transito Benito Juarez"
+          } , {
+          src: "/clientes/oaxaca.png",
+          nombre: "Gobierno del Estado de Oaxaca"
+
+
         }].map(({ src, nombre }, index) => (
+
+
           <SwiperSlide key={index} className="flex items-center justify-center">
             <FadeInOnScroll delay={index * 0.2}>
               <div className="group relative p-4 rounded-xl hover:scale-105 transition-transform duration-500 ease-out text-center">
@@ -971,7 +978,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </section>
 
       <footer className="bg-white border-t py-8 text-center text-sm text-gray-500">
-        © 2025 DEPOT. Todos los derechos reservados. v 1000000000000
+        © 2025 DEPOT. Todos los derechos reservados. v3
       </footer>
       
        <WhatsappButton />
