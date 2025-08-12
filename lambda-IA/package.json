@@ -8,8 +8,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@aws-sdk/client-bedrock-runtime": "^3.842.0"
-  }
+    "@aws-sdk/client-bedrock-runtime": "^3.862.0"
+  },
+  "description": ""
 }

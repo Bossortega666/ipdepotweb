@@ -118,53 +118,68 @@ const ClaudeChat = () => {
   const [loading, setLoading] = useState(false);
 
   const handleClaudeSend = async () => {
-    if (!prompt.trim()) {
-      
-        toast('⚠️ Por favor, ingresa un texto para enviar a la IA.', {
-    icon: '🤖',
-    style: {
-      borderRadius: '8px',
-      background: '#0f172a',
-      color: '#fff',
-    },
-  });
-  return;
-  
+  if (!prompt.trim()) {
+    toast('⚠️ Por favor, ingresa un texto para enviar a la IA.', {
+      icon: '🤖',
+      style: {
+        borderRadius: '8px',
+        background: '#0f172a',
+        color: '#fff',
+      },
+    });
+    return;
+  }
 
-    }
+  setLoading(true);
 
-    setLoading(true);
+  try {
+    const res = await fetch(
+      "https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/invoke-bedrock",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: prompt,
+          conversation: conversation
+        }),
+      }
+    );
 
-    try {
-      const res = await fetch(
-        "https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/invoke-bedrock",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            prompt: prompt,
-            conversation: conversation // ✅ Se manda todo el historial
-          }),
-        }
-      );
-
-      const data = await res.json();
-      const assistantReply = data.result?.trim() || "No hubo respuesta";
-
-      // ✅ Actualiza historial
-      const updatedConversation =
-        `${conversation}\n\nHuman: ${prompt}\n\nAssistant: ${assistantReply}`;
-      setConversation(updatedConversation);
-
-      setResponse(assistantReply);
-      setPrompt(""); // Limpia textarea
-    } catch (err) {
-      console.error(err);
-      alert("❌ Error llamando a Claude");
-    } finally {
+    if (res.status === 429) {
+      toast.error("⏱️ Has superado el límite de solicitudes por minuto. Intenta más tarde.", {
+        icon: '🚫',
+        style: {
+          background: '#fee2e2',
+          color: '#991b1b',
+          border: '1px solid #fca5a5',
+        },
+      });
       setLoading(false);
+      return;
     }
-  };
+
+    if (!res.ok) {
+      toast.error("❌ Error inesperado al comunicarse con la IA.");
+      setLoading(false);
+      return;
+    }
+
+    const data = await res.json();
+    const assistantReply = data.result?.trim() || "No hubo respuesta";
+
+    const updatedConversation =
+      `${conversation}\n\nHuman: ${prompt}\n\nAssistant: ${assistantReply}`;
+    setConversation(updatedConversation);
+
+    setResponse(assistantReply);
+    setPrompt(""); // limpia el textarea
+  } catch (err) {
+    console.error(err);
+    toast.error("❌ Ocurrió un error al contactar a Claude.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
    <motion.div
@@ -299,6 +314,18 @@ const [contactData, setContactData] = useState({
   companyLine: '',
   message: ''
 });
+// Estilos base para inputs
+const baseInput =
+  "w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2";
+
+// Helper para marcar error en rojo
+const inputClass = (hasError?: boolean) =>
+  `${baseInput} ${
+    hasError
+      ? "border-red-400 focus:ring-red-400"
+      : "border-gray-300 focus:ring-blue-500"
+  }`;
+
 
 const [sending, setSending] = useState(false);
 
@@ -326,27 +353,56 @@ const handleCloseModal = () => {
   setSelectedService(null);
 };
 
+// Errores por campo
+const [errors, setErrors] = useState<{
+  name?: string;
+  email?: string;
+  phone?: string;
+  message?: string;
+}>({});
+const validateContact = () => {
+  const newErrors: typeof errors = {};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!contactData.name.trim()) newErrors.name = "Nombre es obligatorio";
+  if (!contactData.email.trim()) newErrors.email = "Correo es obligatorio";
+  else if (!emailRegex.test(contactData.email)) newErrors.email = "Correo no válido";
+
+  // opcional: teléfono solo si lo escriben
+  if (contactData.phone && !/^\d{7,15}$/.test(contactData.phone))
+    newErrors.phone = "Teléfono inválido (7-15 dígitos)";
+
+  if (!contactData.message.trim()) newErrors.message = "Mensaje es obligatorio";
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
 
 
 // Maneja el submit del formulario
 const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
+
+  if (!validateContact()) {
+    toast.error("⚠️ Revisa los campos marcados.");
+    return;
+  }
+
   setSending(true);
   try {
     const response = await fetch(
       'https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/SendEmail',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(contactData)
       }
     );
     const result = await response.json();
+
     if (response.ok) {
-      alert('✅ Mensaje enviado: ' + result.message);
+      toast.success("✅ Mensaje enviado correctamente.");
       setContactData({
         name: '',
         email: '',
@@ -355,12 +411,13 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         companyLine: '',
         message: ''
       });
+      setErrors({});
     } else {
-      alert('❌ Error: ' + result.message);
+      toast.error("❌ Error: " + (result.message || "No se pudo enviar"));
     }
   } catch (error) {
     console.error(error);
-    alert('❌ Hubo un error al enviar el mensaje.');
+    toast.error("❌ Hubo un error al enviar el mensaje.");
   } finally {
     setSending(false);
   }
@@ -913,55 +970,67 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           <form onSubmit={handleContactSubmit} className="space-y-6 text-left">
 
             <input
-              type="text"
-              name="name"
-              placeholder="Nombre / Name"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.name}
-              onChange={handleContactChange}
-            
+  type="text"
+  name="name"
+  placeholder="Nombre / Name"
+  className={inputClass(!!errors.name)}
+  aria-invalid={!!errors.name}
+  value={contactData.name}
+  onChange={handleContactChange}
+/>
+{errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
 
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Correo electrónico / Email"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.email}
-              onChange={handleContactChange}
-           />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Teléfono / Telephone"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.phone}
-              onChange={handleContactChange}            
-            />
-            <input
-              type="text"
-              name="companyName"
-              placeholder="Nombre de la empresa / Name of the company"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.companyName}
-              onChange={handleContactChange} 
-            />
-            <input
-              type="text"
-              name="companyLine"
-              placeholder="Giro de la empresa / Company line"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.companyLine}
-              onChange={handleContactChange} 
-            />
-            <textarea
-              placeholder="Explícanos de tu proyecto / Tell us about your project"
-              name="message"
-              rows={4}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={contactData.message}
-              onChange={handleContactChange}
-            ></textarea>
+<input
+  type="email"
+  name="email"
+  placeholder="Correo electrónico / Email"
+  className={inputClass(!!errors.email)}
+  aria-invalid={!!errors.email}
+  value={contactData.email}
+  onChange={handleContactChange}
+/>
+{errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+
+<input
+  type="tel"
+  name="phone"
+  placeholder="Teléfono / Telephone"
+  className={inputClass(!!errors.phone)}
+  aria-invalid={!!errors.phone}
+  value={contactData.phone}
+  onChange={handleContactChange}
+/>
+{errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+
+<input
+  type="text"
+  name="companyName"
+  placeholder="Nombre de la empresa / Name of the company"
+  className={inputClass(false)}
+  value={contactData.companyName}
+  onChange={handleContactChange}
+/>
+
+<input
+  type="text"
+  name="companyLine"
+  placeholder="Giro de la empresa / Company line"
+  className={inputClass(false)}
+  value={contactData.companyLine}
+  onChange={handleContactChange}
+/>
+
+<textarea
+  placeholder="Explícanos de tu proyecto / Tell us about your project"
+  name="message"
+  rows={4}
+  className={inputClass(!!errors.message)}
+  aria-invalid={!!errors.message}
+  value={contactData.message}
+  onChange={handleContactChange}
+/>
+{errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
+
 
            <Button
               htmlType="submit"
