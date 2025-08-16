@@ -11,6 +11,23 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Asegura que la insignia sea visible y quede por encima de otros overlays */
+.grecaptcha-badge{
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+  right: 16px !important;   /* posición por defecto: abajo-derecha */
+  bottom: 90px !important;  /* súbela para no chocar con el FAB de WhatsApp */
+}
+
+/* Si prefieres abajo-izquierda (móvil, por ejemplo) */
+@media (max-width: 768px){
+  .grecaptcha-badge{
+    left: 16px !important;
+    right: auto !important;
+  }
+}
+
 }
 
 code {

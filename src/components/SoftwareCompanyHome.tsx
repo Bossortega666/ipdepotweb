@@ -30,6 +30,9 @@ import rekog from "../assets/3.png";
 import voz from "../assets/cuatro.png";
 import thales from "../assets/thales.png"
 import amplyfy from "../assets/amplify.png"
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+
+
 
 
 
@@ -90,10 +93,11 @@ const proyectos = [
     titulo: "Integraciones con Gooogle Wallet y Apple Wallet",
     descripcion:
       "En nuestra empresa de desarrollo de software a la medida, potenciamos la innovación con soluciones digitales que se integran perfectamente con Google Wallet y Apple Wallet, ofreciendo a nuestros clientes experiencias digitales seguras, prácticas y alineadas con las tendencias globales.",
-      
+     imagen:"/proyectos/wallet.png" 
   },
 ];
 // LOGICA DEL BOTON DE WHATSAPP
+
 const WhatsappButton: React.FC = () => {
   return (
     <a
@@ -112,74 +116,77 @@ const WhatsappButton: React.FC = () => {
 // Mini Chat Claude
 // 👇 Pega esto arriba de `export default function SoftwareCompanyHome() {`
 const ClaudeChat = () => {
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState("");
   const [conversation, setConversation] = useState(""); // ✅ Nuevo: historial acumulado
   const [loading, setLoading] = useState(false);
 
   const handleClaudeSend = async () => {
-  if (!prompt.trim()) {
-    toast('⚠️ Por favor, ingresa un texto para enviar a la IA.', {
-      icon: '🤖',
-      style: {
-        borderRadius: '8px',
-        background: '#0f172a',
-        color: '#fff',
-      },
-    });
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    const res = await fetch(
-      "https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/invoke-bedrock",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: prompt,
-          conversation: conversation
-        }),
-      }
-    );
-
-    if (res.status === 429) {
-      toast.error("⏱️ Has superado el límite de solicitudes por minuto. Intenta más tarde.", {
-        icon: '🚫',
-        style: {
-          background: '#fee2e2',
-          color: '#991b1b',
-          border: '1px solid #fca5a5',
-        },
+    if (!prompt.trim()) {
+      toast('⚠️ Por favor, ingresa un texto para enviar a la IA.', {
+        icon: '🤖',
+        style: { borderRadius: '8px', background: '#0f172a', color: '#fff' },
       });
-      setLoading(false);
       return;
     }
 
-    if (!res.ok) {
-      toast.error("❌ Error inesperado al comunicarse con la IA.");
-      setLoading(false);
+    // ✅ Captcha inicializado
+    if (!executeRecaptcha) {
+      toast.error("Captcha no inicializado. Recarga la página e intenta de nuevo.");
       return;
     }
 
-    const data = await res.json();
-    const assistantReply = data.result?.trim() || "No hubo respuesta";
+    setLoading(true);
+    try {
+      // 👇 reCAPTCHA dentro del try/catch para capturar rechazos
+      const recaptchaToken = await executeRecaptcha("invoke_bedrock");
+      if (!recaptchaToken) throw new Error("No se obtuvo token de reCAPTCHA");
 
-    const updatedConversation =
-      `${conversation}\n\nHuman: ${prompt}\n\nAssistant: ${assistantReply}`;
-    setConversation(updatedConversation);
+      const res = await fetch(
+        "https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/invoke-bedrock",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            prompt,
+            conversation,
+            recaptchaToken,          // 👈 enviar token al backend
+            recaptchaAction: "invoke_bedrock",
+          }),
+        }
+      );
 
-    setResponse(assistantReply);
-    setPrompt(""); // limpia el textarea
-  } catch (err) {
-    console.error(err);
-    toast.error("❌ Ocurrió un error al contactar a Claude.");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (res.status === 429) {
+        toast.error("⏱️ Has superado el límite de solicitudes por minuto. Intenta más tarde.", {
+          icon: '🚫',
+          style: { background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' },
+        });
+        return;
+      }
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        throw new Error(`Error backend ${res.status}: ${errText || "Error inesperado"}`);
+      }
+
+      const data = await res.json();
+      const assistantReply = data.result?.trim() || "No hubo respuesta";
+
+      const updatedConversation =
+        `${conversation}\n\nHuman: ${prompt}\n\nAssistant: ${assistantReply}`;
+      setConversation(updatedConversation);
+
+      setResponse(assistantReply);
+      setPrompt("");
+    } catch (err: any) {
+      console.error("handleClaudeSend error:", err);
+      toast.error("❌ " + (err?.message || "Ocurrió un error al contactar a Claude."));
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
    <motion.div
@@ -270,6 +277,9 @@ const RobotIcon = FaRobot as unknown as FC<{ className?: string }>;
 
 
 export default function SoftwareCompanyHome() {
+
+const { executeRecaptcha } = useGoogleReCaptcha();
+
 
 //modal de proyectos 
  const [modalAbierto, setModalAbierto] = useState(false);
@@ -389,27 +399,53 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     return;
   }
 
+  // 1) Obtener token de reCAPTCHA
+  // 1) Obtener token de reCAPTCHA, con try/catch
+if (!executeRecaptcha) {
+  toast.error("Captcha no inicializado. Recarga la página e intenta de nuevo.");
+  return;
+}
+
+let recaptchaToken: string | undefined;
+try {
+  recaptchaToken = await executeRecaptcha("contact_form");
+} catch (e) {
+  console.error("reCAPTCHA error (contacto):", e);
+  toast.error("No se pudo obtener el captcha (bloqueado por el navegador).");
+  return;
+}
+if (!recaptchaToken) {
+  toast.error("Captcha cancelado o bloqueado. Intenta nuevamente.");
+  return;
+}
+
+
   setSending(true);
   try {
     const response = await fetch(
-      'https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/SendEmail',
+      "https://0mg2ysk841.execute-api.us-east-1.amazonaws.com/prod/SendEmail",
       {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactData)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...contactData,
+          recaptchaToken,              // 👈 token al backend
+          recaptchaAction: "contact_form",
+        }),
       }
     );
+
     const result = await response.json();
 
     if (response.ok) {
       toast.success("✅ Mensaje enviado correctamente.");
       setContactData({
-        name: '',
-        email: '',
-        phone: '',
-        companyName: '',
-        companyLine: '',
-        message: ''
+        name: "",
+        email: "",
+        phone: "",
+        companyName: "",
+        companyLine: "",
+        message: "",
       });
       setErrors({});
     } else {
@@ -422,6 +458,7 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     setSending(false);
   }
 };
+
 
 
   
@@ -541,10 +578,12 @@ const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   {/* Contenido centrado */}
   <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4">
     <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow">
-      Web Development & AI Solutions — Global Reach
+      Liderando la transformación en la digitalización de documentos certificados.
     </h1>
     <p className="text-white text-lg md:text-xl mb-6 max-w-2xl drop-shadow">
-      Transformamos ideas en experiencias digitales.
+      Infraestructura tecnológica que ha procesado
+más de 5 millones de documentos emitidos en el
+territorio nacional.
     </p>
     <Button
       type="primary"
