@@ -80,12 +80,14 @@ const proyectos = [
     titulo: "Automatización de Procesos Gubernamentales",
     descripcion:
       "Implementamos IA para analizar documentos y automatizar flujos administrativos en entidades públicas, mejorando la eficiencia.",
+      imagen:"/proyectos/procesos.png"
   },
   {
     id: 3,
     titulo: "Reconocimiento Facial para Licencias Digitales",
     descripcion:
       "Integramos reconocimiento facial con IA para autenticar identidades en tiempo real durante la emisión de licencias de conducir digitales.",
+      imagen:"/proyectos/reconocimiento.png"
       
   },
    {

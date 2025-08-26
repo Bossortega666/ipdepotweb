@@ -1,3 +1,4 @@
+// ==== Dependencies ====
 const {
   BedrockRuntimeClient,
   InvokeModelCommand,
@@ -9,74 +10,117 @@ const {
   UpdateItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
+const { TextDecoder } = require("util");
+
+// ==== Clients / Config ====
 const bedrock = new BedrockRuntimeClient({ region: "us-east-1" });
 const ddb = new DynamoDBClient({ region: "us-east-1" });
 
-const RATE_LIMIT = 5;
-const WINDOW_SECONDS = 60;
+const RATE_LIMIT = 5;           // máximo de solicitudes por ventana
+const WINDOW_SECONDS = 60;      // duración de la ventana en segundos
 const TABLE_NAME = "RateLimitTable";
 
+const HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "OPTIONS,POST",
+  "Content-Type": "application/json",
+};
+
+// ==== Handler ====
 exports.handler = async (event) => {
+  // CORS preflight
+  if (event?.requestContext?.http?.method === "OPTIONS") {
+    return { statusCode: 200, headers: HEADERS, body: "" };
+  }
+
   const ip =
-    event.requestContext?.http?.sourceIp ||
-    event.requestContext?.identity?.sourceIp ||
+    event?.requestContext?.http?.sourceIp ||
+    event?.requestContext?.identity?.sourceIp ||
     "unknown";
 
   const now = Math.floor(Date.now() / 1000);
   const key = { ip: { S: ip } };
 
-  // Rate limiting
+  // --- RATE LIMIT ---
   try {
-    const rateData = await ddb.send(new GetItemCommand({
-      TableName: TABLE_NAME,
-      Key: key,
-    }));
+    const rateData = await ddb.send(
+      new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: key,
+        ConsistentRead: true,
+      })
+    );
+
+    let withinWindow = false;
+    let currentCount = 0;
+    let expiresAt = 0;
 
     if (rateData.Item) {
-      const count = parseInt(rateData.Item.count.N);
-      const expiresAt = parseInt(rateData.Item.expiresAt.N);
-
-      if (now < expiresAt && count >= RATE_LIMIT) {
-        return {
-          statusCode: 429,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ error: "Rate limit exceeded. Intenta más tarde." }),
-        };
-      }
+      currentCount = parseInt(rateData.Item.count?.N ?? "0", 10);
+      expiresAt = parseInt(rateData.Item.expiresAt?.N ?? "0", 10);
+      withinWindow = now < expiresAt;
     }
 
-    // Incremento atómico y creación si no existe
-    const updateCmd = new UpdateItemCommand({
-      TableName: TABLE_NAME,
-      Key: key,
-      UpdateExpression: `
-        SET count = if_not_exists(count, :zero) + :incr,
-            expiresAt = if_not_exists(expiresAt, :exp)
-      `,
-      ExpressionAttributeValues: {
-        ":zero": { N: "0" },
-        ":incr": { N: "1" },
-        ":exp": { N: (now + WINDOW_SECONDS).toString() },
-      },
-      ReturnValues: "ALL_NEW",
-    });
+    // Si la ventana está activa y ya superó el límite -> 429
+    if (withinWindow && currentCount >= RATE_LIMIT) {
+      return {
+        statusCode: 429,
+        headers: HEADERS,
+        body: JSON.stringify({
+          error: "Rate limit exceeded. Intenta más tarde.",
+        }),
+      };
+    }
 
-    await ddb.send(updateCmd);
+    // Actualización atómica:
+    // - Si no existe o ya expiró, reiniciamos contador y expiración.
+    // - Si sigue vigente, incrementamos únicamente el contador.
+    if (!rateData.Item || !withinWindow) {
+      await ddb.send(
+        new UpdateItemCommand({
+          TableName: TABLE_NAME,
+          Key: key,
+          UpdateExpression: "SET #c = :one, expiresAt = :exp",
+          ExpressionAttributeNames: { "#c": "count" },
+          ExpressionAttributeValues: {
+            ":one": { N: "1" },
+            ":exp": { N: String(now + WINDOW_SECONDS) },
+          },
+          ReturnValues: "ALL_NEW",
+        })
+      );
+    } else {
+      await ddb.send(
+        new UpdateItemCommand({
+          TableName: TABLE_NAME,
+          Key: key,
+          UpdateExpression: "SET #c = #c + :incr",
+          ExpressionAttributeNames: { "#c": "count" },
+          ExpressionAttributeValues: { ":incr": { N: "1" } },
+          ReturnValues: "UPDATED_NEW",
+        })
+      );
+    }
   } catch (limitError) {
     console.error("Error en rate limiting:", limitError);
-    // Si falla Dynamo, puedes dejar continuar
+    // Si Dynamo falla, no bloqueamos al usuario: dejamos continuar.
   }
 
-  // Ejecutar Bedrock
+  // --- BEDROCK ---
   try {
-    const body = JSON.parse(event.body);
-    const prompt = body.prompt || "Hola";
+    let prompt = "Hola";
+    try {
+      const body = event?.body ? JSON.parse(event.body) : {};
+      if (body?.prompt && typeof body.prompt === "string") {
+        prompt = body.prompt;
+      }
+    } catch {
+      // body inválido -> usamos prompt por defecto
+    }
 
     const command = new InvokeModelCommand({
-      modelId: "anthropic.claude-v2:1",
+      modelId: "anthropic.claude-v2:1", // deja el ID que ya estás usando
       contentType: "application/json",
       accept: "application/json",
       body: JSON.stringify({
@@ -86,24 +130,19 @@ exports.handler = async (event) => {
     });
 
     const response = await bedrock.send(command);
-    const completion = JSON.parse(new TextDecoder().decode(response.body));
+    const decoded = new TextDecoder().decode(response.body);
+    const completion = JSON.parse(decoded);
 
     return {
       statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
+      headers: HEADERS,
       body: JSON.stringify({ result: completion.completion }),
     };
   } catch (err) {
-    console.error("Error:", err);
+    console.error("Error en Bedrock:", err);
     return {
       statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
+      headers: HEADERS,
       body: JSON.stringify({ error: "Error interno en Lambda" }),
     };
   }
